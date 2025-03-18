@@ -4,7 +4,6 @@ import com.feng.filetransfers.common.exception.APIException;
 import com.feng.filetransfers.model.enums.ResultCode;
 import com.feng.filetransfers.model.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
