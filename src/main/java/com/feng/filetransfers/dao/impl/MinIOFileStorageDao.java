@@ -3,6 +3,7 @@ package com.feng.filetransfers.dao.impl;
 import com.feng.filetransfers.dao.IFileStorageDao;
 import com.feng.filetransfers.model.dto.BlockFileInfoDTO;
 import com.feng.filetransfers.model.dto.FileInfoDTO;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
@@ -10,6 +11,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 @Repository
+@ConditionalOnProperty(name="file-transfer.storage-source", havingValue = "minIO", matchIfMissing = true)
 public class MinIOFileStorageDao implements IFileStorageDao {
     @Override
     public String generateTransferId() {

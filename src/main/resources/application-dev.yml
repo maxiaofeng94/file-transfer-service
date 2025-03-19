@@ -2,3 +2,6 @@ spring:
   devtools:
     restart:
       enabled: true
+  data:
+    mongodb:
+      uri: mongodb://test:123456@localhost:27017/data

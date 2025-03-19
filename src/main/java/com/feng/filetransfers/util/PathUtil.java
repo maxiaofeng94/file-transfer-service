@@ -23,6 +23,9 @@ public class PathUtil {
      * @return 目录路径
      */
     public static String getProjectDir() {
+        if(projectSource == null) {
+            return "";
+        }
         return projectSource.getParent();
     }
 }
