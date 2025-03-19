@@ -21,4 +21,12 @@ public class FileFullInfoDTO {
      * 文件名称
      */
     private FileNameDTO fileName;
+
+    /**
+     * 获取文件完整名称，包含后缀
+     * @return 文件完整名称
+     */
+    public String getFileName(){
+        return fileName.getName() + "." + fileName.getExt();
+    }
 }

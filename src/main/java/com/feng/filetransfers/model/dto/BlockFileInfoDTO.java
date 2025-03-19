@@ -32,7 +32,7 @@ public class BlockFileInfoDTO {
     /**
      * 分块文件序号
      */
-    private String num;
+    private int num;
 
     /**
      * 分块文件在存储介质中的id值

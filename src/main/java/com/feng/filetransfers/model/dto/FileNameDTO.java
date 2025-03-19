@@ -38,4 +38,19 @@ public class FileNameDTO {
      * 创建时间
      */
     private LocalDateTime createdTime;
+
+    public FileNameDTO(String fileId, String hashCode, String fullName, LocalDateTime createdTime) {
+        this.fileId = fileId;
+        this.hashCode = hashCode;
+        this.createdTime = createdTime;
+
+        int lastIndex = fullName.lastIndexOf('.');
+        if (lastIndex == -1) {
+            this.name = fullName;
+            this.ext = "";
+        }else{
+            this.name = fullName.substring(0, lastIndex);
+            this.ext = fullName.substring(lastIndex + 1);
+        }
+    }
 }

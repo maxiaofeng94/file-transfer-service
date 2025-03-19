@@ -14,7 +14,7 @@ public abstract class AbsFileMetaInfoDao {
     /**
      * 根据文件哈希值获取文件信息
      * @param fileHashCode 文件哈希值
-     * @return 文件信息对象
+     * @return 文件信息对象，如果没有找到，则返回null
      */
     public abstract FileInfoDTO getFileInfoByHashCode(String fileHashCode);
 
@@ -27,9 +27,18 @@ public abstract class AbsFileMetaInfoDao {
     /**
      * 根据文件Id获取文件名称
      * @param fileId 文件Id
-     * @return 文件名称对象
+     * @return 文件名称对象，如果没有找到，则返回null
      */
     public abstract FileNameDTO getFileNameByFileId(String fileId);
+
+    /**
+     * 根据文件哈希值和文件完整名称查询对应的文件名称对象
+     * @param fileHashCode 文件哈希值
+     * @param name 文件名称（不含后缀）
+     * @param ext 文件后缀（不含“.”）
+     * @return 文件名称对象，如果没有找到，则返回null
+     */
+    public abstract FileNameDTO queryFileName(String fileHashCode, String name, String ext);
 
     /**
      * 保存文件名称
@@ -53,11 +62,18 @@ public abstract class AbsFileMetaInfoDao {
     /**
      * 根据文件Id获取文件完整信息
      * @param fileId 文件Id
-     * @return 文件完整信息对象
+     * @return 文件完整信息对象，如果没有找到，则返回null
      */
     public FileFullInfoDTO getFileFullInfoByFileId(String fileId) {
         FileNameDTO fileNameDTO = getFileNameByFileId(fileId);
+        if(fileNameDTO == null) {
+            return null;
+        }
+
         FileInfoDTO fileInfoDTO = getFileInfoByHashCode(fileNameDTO.getHashCode());
+        if(fileInfoDTO == null) {
+            return null;
+        }
 
         return new FileFullInfoDTO(fileInfoDTO, fileNameDTO);
     }
