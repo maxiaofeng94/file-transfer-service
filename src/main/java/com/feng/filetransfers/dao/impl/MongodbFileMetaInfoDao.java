@@ -86,4 +86,9 @@ public class MongodbFileMetaInfoDao extends AbsFileMetaInfoDao {
 
         return blockFileInfoDTOs;
     }
+
+    @Override
+    public void deleteBlockFileInfoByTransferId(String transferId) {
+        mongoTemplate.remove(new Query(Criteria.where("transferId").is(transferId)), BlockFileInfoDO.class);
+    }
 }

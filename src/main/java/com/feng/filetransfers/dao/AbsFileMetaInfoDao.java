@@ -60,6 +60,12 @@ public abstract class AbsFileMetaInfoDao {
     public abstract List<BlockFileInfoDTO> getBlockFileInfosByTransferId(String transferId);
 
     /**
+     * 根据文件传输Id删除分块文件信息
+     * @param transferId
+     */
+    public abstract void deleteBlockFileInfoByTransferId(String transferId);
+
+    /**
      * 根据文件Id获取文件完整信息
      * @param fileId 文件Id
      * @return 文件完整信息对象，如果没有找到，则返回null

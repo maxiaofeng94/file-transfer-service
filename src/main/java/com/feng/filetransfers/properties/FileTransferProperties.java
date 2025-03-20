@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,4 +26,9 @@ public class FileTransferProperties {
      * 文件存储介质数据源
      */
     private String storageSource = "minIO";
+
+    /**
+     * 是否保留分块文件及相关信息
+     */
+    private boolean retainBlocks = false;
 }

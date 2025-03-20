@@ -20,8 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -42,13 +44,13 @@ public class FileTransferService implements IFileTransferService {
 
         // 获取临时路径
         if (properties.getTempPath() == null || properties.getTempPath().isEmpty()) {
-            tempPath = PathUtil.getProjectDir() + File.pathSeparator + "temp";
+            tempPath = PathUtil.getProjectDir() + File.separator + "temp";
         }else{
             File temp = new File(properties.getTempPath());
             if(temp.isAbsolute()){
                 tempPath = properties.getTempPath();
             }else{
-                tempPath = PathUtil.getProjectDir() + File.pathSeparator + properties.getTempPath();
+                tempPath = PathUtil.getProjectDir() + File.separator + properties.getTempPath();
             }
         }
     }
@@ -60,7 +62,7 @@ public class FileTransferService implements IFileTransferService {
 
         // 没有对应文件，则返回文件不存在状态，并且生成文件传输Id
         if(fileInfoDTO == null) {
-            return new FileStatusVO(FileStatus.NONE, fileStorageDao.generateTransferId());
+            return new FileStatusVO(FileStatus.NONE, fileStorageDao.generateTransferId(fileHashCode, fileName));
         }
 
         // 存在文件，则此文件不用再次上次，如果文件名称与上次上传文件名称不相同，则新增一条记录保存
@@ -81,19 +83,24 @@ public class FileTransferService implements IFileTransferService {
     }
 
     @Override
-    public void uploadBlockFile(MultipartFile file, String transferId, int blockNum, String blockHashCode) throws IOException {
+    public void uploadBlockFile(MultipartFile file, String transferId, int blockNum,
+                                String blockHashCode, String fileHashCode) throws IOException, NoSuchAlgorithmException {
         //将文件保存到本地临时文件中
         File tempFile = new File(tempPath + File.separator + transferId + File.separator + blockNum);
+        if(!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()){
+            throw new APIException("无法创建临时目录");
+        }
         file.transferTo(tempFile);
 
         //校验文件的哈希值
         String tempFileHashCode = FileUtil.calcSha256Hash(tempFile);
         if(!tempFileHashCode.equals(blockHashCode)) {
-            throw new APIException("序号为" + blockNum + "的分块文件哈希值验证失败");
+            throw new APIException("序号为%d的分块文件哈希值验证失败。传入哈希值：%s验证哈希值：%s"
+                    .formatted(blockNum, blockHashCode, tempFileHashCode));
         }
 
         //将分块文件保存到存储介质中
-        String storageId = fileStorageDao.saveBlockFile(transferId, blockNum, tempFile);
+        String storageId = fileStorageDao.saveBlockFile(transferId, fileHashCode, blockNum, tempFile);
 
         //保存分块文件信息记录
         BlockFileInfoDTO blockFileInfoDTO = new BlockFileInfoDTO(
@@ -108,7 +115,7 @@ public class FileTransferService implements IFileTransferService {
     public String mergeFile(String transferId, String fileHashCode, String fileName) {
         //查询分块文件信息，合并分块文件保存到存储介质
         List<BlockFileInfoDTO> blockFileInfos = fileMetaInfoDao.getBlockFileInfosByTransferId(transferId);
-        FileInfoDTO fileInfoDTO = fileStorageDao.saveMergeFile(transferId, fileHashCode, blockFileInfos);
+        FileInfoDTO fileInfoDTO = fileStorageDao.saveMergeFile(transferId, fileHashCode, fileName, blockFileInfos);
 
         //合并成功后，保存文件信息
         fileMetaInfoDao.saveFileInfo(fileInfoDTO);
@@ -119,6 +126,18 @@ public class FileTransferService implements IFileTransferService {
                 fileInfoDTO.getHashCode(),
                 fileName, LocalDateTime.now());
         fileMetaInfoDao.saveFileName(fileNameDTO);
+
+        //如果配置不保留分块文件信息，则删除临时合并文件，以及合并文件信息
+        if(!properties.isRetainBlocks()) {
+            File tempFolder = new File(tempPath + File.separator + transferId);
+            if (tempFolder.exists()) {
+                for(File tempFile : Objects.requireNonNull(tempFolder.listFiles())) {
+                    tempFile.delete();
+                }
+                tempFolder.delete();
+            }
+            fileMetaInfoDao.deleteBlockFileInfoByTransferId(transferId);
+        }
 
         //返回文件Id
         return fileNameDTO.getFileId();

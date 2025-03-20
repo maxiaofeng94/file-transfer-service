@@ -51,12 +51,6 @@
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-
         <!--由于springboot的3.4版本使用了spring web版本为6.2.0，其中ControllerAdviceBean的构造函数参数发生了变化（从1个参数变成3个），
         但是knife4j的starter中依赖的springdoc版本较低，导致项目中存在@ControllerAdvice注解的类时，由于调用对应构造函数报错，导致无法
         正常打开接口文档页面。因此临时增加以下依赖，等待knife4j修复此问题后再去除此依赖-->
@@ -75,6 +69,18 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.7.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.17</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>

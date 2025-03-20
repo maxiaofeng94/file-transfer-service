@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * 文件传输相关接口Controller层
@@ -41,11 +42,13 @@ public class FileTransferController {
      * @param transferId 文件传输Id
      * @param blockNum 分块文件序号
      * @param blockHashCode 分块文件哈希值
+     * @param fileHashCode 完整文件的哈希值
      */
     @PostMapping("uploadBlock")
     public void uploadBlockFile(@RequestParam MultipartFile file, @RequestParam String transferId,
-                                @RequestParam int blockNum, @RequestParam String blockHashCode) throws IOException {
-        fileTransferService.uploadBlockFile(file, transferId, blockNum, blockHashCode);
+                                @RequestParam int blockNum, @RequestParam String blockHashCode,
+                                @RequestParam String fileHashCode) throws IOException, NoSuchAlgorithmException {
+        fileTransferService.uploadBlockFile(file, transferId, blockNum, blockHashCode, fileHashCode);
     }
 
     /**

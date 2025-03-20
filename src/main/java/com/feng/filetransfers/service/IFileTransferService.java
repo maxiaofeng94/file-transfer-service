@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * 文件传输逻辑实现Service层
@@ -24,8 +25,10 @@ public interface IFileTransferService {
      * @param transferId 文件传输Id
      * @param blockNum 分块文件序号
      * @param blockHashCode 分块文件哈希值
+     * @param fileHashCode 完整文件的哈希值
      */
-    void uploadBlockFile(MultipartFile file, String transferId, int blockNum, String blockHashCode) throws IOException;
+    void uploadBlockFile(MultipartFile file, String transferId, int blockNum,
+                         String blockHashCode, String fileHashCode) throws IOException, NoSuchAlgorithmException;
 
     /**
      * 合并分块文件
