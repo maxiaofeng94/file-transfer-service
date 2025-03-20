@@ -1,17 +1,12 @@
 package com.feng.filetransfers.controller;
 
-import com.feng.filetransfers.common.annotation.NotResponseBody;
 import com.feng.filetransfers.model.vo.FileStatusVO;
 import com.feng.filetransfers.service.IFileTransferService;
-import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 

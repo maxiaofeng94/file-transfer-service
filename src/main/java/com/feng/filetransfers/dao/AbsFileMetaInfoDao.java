@@ -61,7 +61,7 @@ public abstract class AbsFileMetaInfoDao {
 
     /**
      * 根据文件传输Id删除分块文件信息
-     * @param transferId
+     * @param transferId 文件传输Id
      */
     public abstract void deleteBlockFileInfoByTransferId(String transferId);
 

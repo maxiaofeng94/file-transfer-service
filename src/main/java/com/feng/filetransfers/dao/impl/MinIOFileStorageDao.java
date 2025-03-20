@@ -1,6 +1,5 @@
 package com.feng.filetransfers.dao.impl;
 
-import com.feng.filetransfers.common.exception.APIException;
 import com.feng.filetransfers.dao.IFileStorageDao;
 import com.feng.filetransfers.model.dto.BlockFileInfoDTO;
 import com.feng.filetransfers.model.dto.FileInfoDTO;
@@ -10,7 +9,6 @@ import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
 import io.minio.errors.XmlParserException;
 import io.minio.messages.Part;
-import io.minio.messages.Tags;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -21,7 +19,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;

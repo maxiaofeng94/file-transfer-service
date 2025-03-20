@@ -4,7 +4,6 @@ import com.feng.filetransfers.properties.MinioProperties;
 import io.minio.MinioAsyncClient;
 import io.minio.MinioClient;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
