@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
  */
 @RestController
 @RequestMapping("file")
+@CrossOrigin(origins = "*")
 public class FileTransferController {
 
     @Autowired
@@ -57,6 +58,16 @@ public class FileTransferController {
     public String mergeFile(@RequestParam String transferId, @RequestParam String fileHashCode,
                           @RequestParam String fileName){
         return fileTransferService.mergeFile(transferId, fileHashCode, fileName);
+    }
+
+    /**
+     * 中止文件上传
+     * @param transferId 文件传输Id
+     * @param fileHashCode 完整文件哈希值
+     */
+    @PostMapping("stop")
+    public void stopUpload(@RequestParam String transferId, @RequestParam String fileHashCode){
+        fileTransferService.stopUpload(transferId, fileHashCode);
     }
 
     /**

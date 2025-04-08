@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 /**
  * 文件传输逻辑实现Service层
@@ -38,6 +39,19 @@ public interface IFileTransferService {
      * @return 文件Id
      */
     String mergeFile(String transferId, String fileHashCode, String fileName);
+
+    /**
+     * 中止文件上传
+     * @param transferId 文件传输Id
+     * @param fileHashCode 完整文件哈希值
+     */
+    void stopUpload(String transferId, String fileHashCode);
+
+    /**
+     * 根据文件哈希值批量删除文件
+     * @param fileHashCodes 文件哈希值数组
+     */
+    void deleteFileByHashCode(List<String> fileHashCodes);
 
     /**
      * 下载文件

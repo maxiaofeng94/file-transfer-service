@@ -28,6 +28,13 @@ public interface IFileStorageDao {
     String saveBlockFile(String transferId, String fileHashCode, int blockNum, File blockFile);
 
     /**
+     * 清除在存储介质中的分块文件（一般在执行文件上传中止时调用）
+     * @param transferId 文件传输Id
+     * @param fileHashCode 完整文件哈希值
+     */
+    void cleanBlockFile(String transferId, String fileHashCode);
+
+    /**
      * 合并分块文件并将合并后的文件保存至存储介质中
      * @param transferId 文件传输Id
      * @param fileHashCode 完整文件哈希值
@@ -36,6 +43,12 @@ public interface IFileStorageDao {
      */
     FileInfoDTO saveMergeFile(String transferId, String fileHashCode, String fileName,
                               List<BlockFileInfoDTO> blockInfos);
+
+    /**
+     * 删除文件
+     * @param storageIds 文件在存储介质中的Id值数组
+     */
+    void deleteFile(List<String> storageIds);
 
     /**
      * 从存储介质中下载文件输出到输出流中

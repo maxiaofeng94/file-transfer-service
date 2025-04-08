@@ -64,6 +64,18 @@ public class MinIOFileStorageDao implements IFileStorageDao {
     }
 
     @Override
+    public void cleanBlockFile(String transferId, String fileHashCode) {
+        try {
+            minioAsyncClient.abortMultipartUploadAsync(minioProperties.getBucket(), null,
+                    fileHashCode, transferId, null, null).get();
+        } catch (InterruptedException | ExecutionException | InsufficientDataException | InternalException |
+                 InvalidKeyException | IOException | NoSuchAlgorithmException | XmlParserException e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public FileInfoDTO saveMergeFile(String transferId, String fileHashCode, String fileName,
                                      List<BlockFileInfoDTO> blockInfos) {
         List<Part> parts = new ArrayList<>();
@@ -75,7 +87,7 @@ public class MinIOFileStorageDao implements IFileStorageDao {
                     minioProperties.getBucket(), null, fileHashCode, transferId,
                     parts.toArray(new Part[0]), null, null).get();
 
-            //将文件名称记录到tags中
+            //将文件名称记录到tags中，因为api不支持中文tag保存，所以中文的文件名称在tag中无法显示，只能关联数据库才能看到文件名称了
             minioAsyncClient.setObjectTags(SetObjectTagsArgs.builder().
                     bucket(minioProperties.getBucket()).object(fileHashCode)
                     .tags(Map.of("fileName", fileName)).build());
@@ -85,6 +97,20 @@ public class MinIOFileStorageDao implements IFileStorageDao {
                     .object(fileHashCode).build()).get();
 
             return new FileInfoDTO(fileHashCode, statObjectResponse.size(), fileHashCode, LocalDateTime.now());
+        } catch (InterruptedException | ExecutionException | InsufficientDataException | InternalException |
+                 InvalidKeyException | IOException | NoSuchAlgorithmException | XmlParserException e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void deleteFile(List<String> storageIds) {
+        try {
+            for(String storageId : storageIds) {
+                minioAsyncClient.removeObject(RemoveObjectArgs.builder()
+                        .bucket(minioProperties.getBucket()).object(storageId).build()).get();
+            }
         } catch (InterruptedException | ExecutionException | InsufficientDataException | InternalException |
                  InvalidKeyException | IOException | NoSuchAlgorithmException | XmlParserException e) {
             log.error(e.getMessage(), e);

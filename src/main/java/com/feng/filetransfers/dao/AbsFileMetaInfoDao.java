@@ -25,6 +25,12 @@ public abstract class AbsFileMetaInfoDao {
     public abstract void saveFileInfo(FileInfoDTO fileInfo);
 
     /**
+     * 批量删除文件信息
+     * @param fileHashCodes 文件哈希值数值
+     */
+    public abstract void deleteFileInfo(List<String> fileHashCodes);
+
+    /**
      * 根据文件Id获取文件名称
      * @param fileId 文件Id
      * @return 文件名称对象，如果没有找到，则返回null
@@ -45,6 +51,12 @@ public abstract class AbsFileMetaInfoDao {
      * @param fileName 文件名称对象
      */
     public abstract void saveFileName(FileNameDTO fileName);
+
+    /**
+     * 根据文件哈希值批量删除文件名称信息
+     * @param fileHashCodes 文件哈希值数组
+     */
+    public abstract void deleteFileNameByHashCode(List<String> fileHashCodes);
 
     /**
      * 保存分块文件信息

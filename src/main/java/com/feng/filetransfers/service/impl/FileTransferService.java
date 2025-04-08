@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -87,8 +88,10 @@ public class FileTransferService implements IFileTransferService {
                                 String blockHashCode, String fileHashCode) throws IOException, NoSuchAlgorithmException {
         //将文件保存到本地临时文件中
         File tempFile = new File(tempPath + File.separator + transferId + File.separator + blockNum);
-        if(!tempFile.getParentFile().exists() && !tempFile.getParentFile().mkdirs()){
-            throw new APIException("无法创建临时目录");
+        if(!tempFile.getParentFile().exists()){
+            if(!tempFile.getParentFile().mkdirs()){
+                throw new APIException("无法创建临时目录");
+            }
         }
         file.transferTo(tempFile);
 
@@ -115,6 +118,7 @@ public class FileTransferService implements IFileTransferService {
     public String mergeFile(String transferId, String fileHashCode, String fileName) {
         //查询分块文件信息，合并分块文件保存到存储介质
         List<BlockFileInfoDTO> blockFileInfos = fileMetaInfoDao.getBlockFileInfosByTransferId(transferId);
+        blockFileInfos.sort(Comparator.comparingInt(BlockFileInfoDTO::getNum));
         FileInfoDTO fileInfoDTO = fileStorageDao.saveMergeFile(transferId, fileHashCode, fileName, blockFileInfos);
 
         //合并成功后，保存文件信息
@@ -127,6 +131,31 @@ public class FileTransferService implements IFileTransferService {
                 fileName, LocalDateTime.now());
         fileMetaInfoDao.saveFileName(fileNameDTO);
 
+        //删除临时分块文件与信息
+        deleteBlockFileAndInfo(transferId);
+
+        //返回文件Id
+        return fileNameDTO.getFileId();
+    }
+
+    @Override
+    public void stopUpload(String transferId, String fileHashCode) {
+        fileStorageDao.cleanBlockFile(transferId, fileHashCode);
+        deleteBlockFileAndInfo(transferId);
+    }
+
+    @Override
+    public void deleteFileByHashCode(List<String> fileHashCodes) {
+        fileStorageDao.deleteFile(fileHashCodes);
+        fileMetaInfoDao.deleteFileNameByHashCode(fileHashCodes);
+        fileMetaInfoDao.deleteFileInfo(fileHashCodes);
+    }
+
+    /**
+     * 删除临时文件夹中的分块文件，和元信息中记录的分块文件信息
+     * @param transferId 文件传输Id
+     */
+    private void deleteBlockFileAndInfo(String transferId) {
         //如果配置不保留分块文件信息，则删除临时合并文件，以及合并文件信息
         if(!properties.isRetainBlocks()) {
             File tempFolder = new File(tempPath + File.separator + transferId);
@@ -138,9 +167,6 @@ public class FileTransferService implements IFileTransferService {
             }
             fileMetaInfoDao.deleteBlockFileInfoByTransferId(transferId);
         }
-
-        //返回文件Id
-        return fileNameDTO.getFileId();
     }
 
     @Override

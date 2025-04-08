@@ -42,6 +42,11 @@ public class MongodbFileMetaInfoDao extends AbsFileMetaInfoDao {
     }
 
     @Override
+    public void deleteFileInfo(List<String> fileHashCodes) {
+        mongoTemplate.remove(Query.query(Criteria.where("hashCode").in(fileHashCodes)), FileInfoDO.class);
+    }
+
+    @Override
     public FileNameDTO getFileNameByFileId(String fileId) {
         FileNameDO fileNameDO = mongoTemplate.findById(fileId, FileNameDO.class);
         if(fileNameDO == null){
@@ -66,6 +71,11 @@ public class MongodbFileMetaInfoDao extends AbsFileMetaInfoDao {
     public void saveFileName(FileNameDTO fileName) {
         FileNameDO fileNameDO = new FileNameDO(fileName);
         mongoTemplate.save(fileNameDO);
+    }
+
+    @Override
+    public void deleteFileNameByHashCode(List<String> fileHashCodes) {
+        mongoTemplate.remove(Query.query(Criteria.where("hashCode").in(fileHashCodes)), FileNameDO.class);
     }
 
     @Override
